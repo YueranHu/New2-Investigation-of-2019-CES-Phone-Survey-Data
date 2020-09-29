@@ -1,0 +1,307 @@
+---
+title: "Investigation of 2019 CES Phone Survey Data"
+author: "YUERAN HU"
+date: 2020-09-27T21:13:14-05:00
+bibliography: "references.bib"
+categories: ["R"]
+tags: ["R Markdown", "plot", "regression"]
+---
+
+
+
+<p>Code and data supporting this analysis is available at: “GitHub URL”.</p>
+<div id="part1.-abstract" class="section level1">
+<h1>Part1. Abstract:</h1>
+<p>We observe and analyze the 2019 CES Phone Survey data. By following graphs and model, we found that people with higher education level have higher satisfaction to Canadian government. This result is important, since we can predict people’s satisfaction to government by their education level, and Canadian education level has always been a concern for citizens and new immigrants.
+We use <span class="citation">Wickham et al. (2019)</span> <span class="citation">Wickham et al. (2020)</span> <span class="citation">Waring et al. (2020)</span> <span class="citation">Wickham, Hester, and Chang (2020)</span>.</p>
+</div>
+<div id="part2.-introduction" class="section level1">
+<h1>Part2. Introduction</h1>
+<p>In Canada, 68 percent of Canadians aged 25 to 64 attained some form of post-secondary education, which is 24 percent above the OECD average of 44 percent (Statistics Canada, 2018).British Columbia, Ontario, and Alberta are the top performers among all the provinces, earning “B” grades on the Education and Skills report card (ConferenceBoard 2020).For people’s satisfaction of government in Canada, Research Co. and Glacier Media found that Atlantic Canada has the largest proportion of residents who are pleased with the federal government (71%), followed by Ontario (68%), Alberta (66%), British Columbia (65%), Saskatchewan and Manitoba (also 65%) and Quebec (58%) in 2020(Mario Canseco 2020). We found that some provinces have a high satisfaction proportion to government also have a good performers on Education. This information is important, and it lead us to explore the relation between education level and government satisfaction.</p>
+<p>In this investigation, we observe and analyze the 2019 CES Phone Survey data. Under the 2019 CES Phone Survey data, we will focus on two variables: interviewer’s highest education level(in level -9 to 11) and interviewer’s satisfaction to Canada government(in level -9 to 4). By graphs, model and analysis, we found that people with higher education level have higher satisfaction to Canadian government. There is a positive linear relation between them.</p>
+<p>Performed 2019 CES Phone Survey data diagnostics and fitted a linear regression model, the result showed that people with higher education level have higher satisfaction to Canadian government. However, we might lack of considering the distribution of people’s education level and satisfaction of government is not a normal distribution, so the data might affect our results. Secondly, we did not consider of lurking variable, which is a variable that is not included as (level of education and satisfaction of government) two variables in the analysis but can affect the interpretation of relationships between these two variables, like interviewers’ age, gender, income, and so on. For improvement, we can find the residual of our model and make a residual plot of it, to see if our model is fitted. For future study, we can study more about what factors can influence people’s government satisfaction and level of education.</p>
+</div>
+<div id="part3.-data-introduction" class="section level1">
+<h1>Part3. Data introduction</h1>
+<p>###Introduce dataset</p>
+<p>The 2019 Canadian Election Study - Phone Survey was conducted to gather the attitudes and opinions of Canadians, such as political behavior, political attitudes, social concerns, and so on, during and after the 2019 federal election. It continues the tradition of Canadian Election Studies started in 1965. This CES phone survey data is a survey dataset which is one of two data files for the 2019 CES - online survey and phone survey.
+The <code>phone2019_newsubset</code> dataset is a subset of the 2019 CES phone survey, it contains demographics, geographic, educational and social information. We will use the <code>phone2019_newsubset</code> dataset to make our following analysis.</p>
+<pre class="r"><code># install.packages(&quot;devtools&quot;)
+# devtools::install_github(&quot;hodgettsp/cesR&quot;)
+
+get_ces(&quot;ces2019_phone&quot;)</code></pre>
+<pre><code>## TO CITE THIS SURVEY FILE:
+## 
+## - Stephenson, Laura B; Harell, Allison; Rubenson, Daniel; Loewen, Peter John, 2020, &#39;2019 Canadian Election Study - Phone Survey&#39;, https://doi.org/10.7910/DVN/8RHLG1, Harvard Dataverse, V1, UNF:6:eyR28qaoYlHj9qwPWZmmVQ== [fileUNF]
+## 
+## - Stephenson, Laura, Allison Harrel, Daniel Rubenson and Peter Loewen. Forthcoming. &#39;Measuring Preferences and Behaviour in the 2019 Canadian Election Study,&#39; Canadian Journal of Political Science.
+## 
+## LINK: https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/8RHLG1</code></pre>
+<pre class="r"><code>phone2019_subset &lt;- ces2019_phone %&gt;%
+  select(7,8,26,28,87,93)
+
+phone2019_newsubset &lt;- phone2019_subset %&gt;%
+  rename(participant_gender = interviewer_gender_CES, 
+         participant_language = language_CES,
+         participant_age = q2,
+         participant_living_place = q4,
+         government_satisfaction = q54,
+         education_level = q61
+         )
+
+head(phone2019_newsubset)</code></pre>
+<pre><code>## # A tibble: 6 x 6
+##   participant_gen… participant_lan… participant_age participant_liv…
+##   &lt;chr&gt;                   &lt;dbl+lbl&gt;       &lt;dbl+lbl&gt;        &lt;dbl+lbl&gt;
+## 1 Female            2 [(2) French]             1963   5 [(5) Quebec]
+## 2 Male              1 [(1) English]            1973   5 [(5) Quebec]
+## 3 Female            2 [(2) French]             1994   5 [(5) Quebec]
+## 4 Female            2 [(2) French]             2000   5 [(5) Quebec]
+## 5 Male              2 [(2) French]             1984   5 [(5) Quebec]
+## 6 Female            2 [(2) French]             1939   5 [(5) Quebec]
+## # … with 2 more variables: government_satisfaction &lt;dbl+lbl&gt;,
+## #   education_level &lt;dbl+lbl&gt;</code></pre>
+<p>###Here is an overview of ‘phone2019_newsubset’.</p>
+<pre class="r"><code>skimr::skim(phone2019_newsubset)</code></pre>
+<table>
+<caption><span id="tab:unnamed-chunk-1">Table 1: </span>Data summary</caption>
+<tbody>
+<tr class="odd">
+<td align="left">Name</td>
+<td align="left">phone2019_newsubset</td>
+</tr>
+<tr class="even">
+<td align="left">Number of rows</td>
+<td align="left">4021</td>
+</tr>
+<tr class="odd">
+<td align="left">Number of columns</td>
+<td align="left">6</td>
+</tr>
+<tr class="even">
+<td align="left">_______________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Column type frequency:</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">character</td>
+<td align="left">6</td>
+</tr>
+<tr class="odd">
+<td align="left">________________________</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">Group variables</td>
+<td align="left">None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: character</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">min</th>
+<th align="right">max</th>
+<th align="right">empty</th>
+<th align="right">n_unique</th>
+<th align="right">whitespace</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">participant_gender</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">11</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">participant_language</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">participant_age</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="right">0</td>
+<td align="right">79</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">participant_living_place</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">10</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">government_satisfaction</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">6</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">education_level</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">13</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<p>From this data summery, we find that there are 4021 rows and 6 columns in the dataset ‘phone2019_newsubset’. The variables contains the interviewers’ gender, the languages they can speak, their year of birth, where they live, their education level, and their satisfaction of the government performance. All the variables have no missing value, and they all compete those parts of the phone survey.</p>
+<p>###Data summary and graphs for individal variables:government_satisfaction and education_level.</p>
+<p>In this dataset ‘phone2019_newsubset`, we are interested in interviewers’ education levels and their satisfaction of the government performance. Moreover, we want to find if they have any relation. First of all, we will make data summary and graphs for these two variables.</p>
+<p>We start with interviewers’ education level, then satisfaction of the government performance.</p>
+<pre class="r"><code>#Save education_level data as shorter name for convenience.
+edu_level &lt;- phone2019_newsubset$education_level
+
+summary(edu_level)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  -9.000   6.000   8.000   7.562   9.000  11.000</code></pre>
+<pre class="r"><code>edu_leve_standard_deviation &lt;- sd(edu_level)
+edu_leve_standard_deviation</code></pre>
+<pre><code>## [1] 2.163563</code></pre>
+<pre class="r"><code>edu_leve_variance &lt;- (edu_leve_standard_deviation)^2
+edu_leve_variance</code></pre>
+<pre><code>## [1] 4.681006</code></pre>
+<pre class="r"><code>edu_leve_IQR &lt;- IQR(edu_level)
+edu_leve_IQR</code></pre>
+<pre><code>## [1] 3</code></pre>
+<p>As above, it shows the data summary of interviewer’s education level. We see that the range of the education level is from -9 to 11.
+Center: The mean of education level for this dataset is 7.562, and the median of education level for this dataset is 8.000.
+Spread: The standard deviation of education level for this dataset is 2.163563, the variance of education level for this dataset is 4.681006, and the interquartile range of education level for this dataset is 3.</p>
+<pre class="r"><code>edu_level &lt;- as.data.frame(edu_level)
+ggplot(data = edu_level, aes(x = edu_level)) +
+  geom_histogram(col=&quot;black&quot;, fill=&quot;pink&quot;, bins = 20) + theme_classic() + 
+  labs(title=&quot;Histogram of interviewer&#39;s education level&quot;)</code></pre>
+<p><img src="/post/2015-07-23-r-rmarkdown_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>In this histogram of interviewer’s education level, the distribution of the data is not symmetric. We see that the prominent peak lies to the right with the tail extending to the left, that means it is a left-skewed dataset. This variable interviewer’s education level is not approximately normal. There are more than 1500 people that intend to rate more than 9 points to the government. Also it shows a few people with education level from -9 to -1.</p>
+<pre class="r"><code>satisfaction &lt;- phone2019_newsubset$government_satisfaction
+
+summary(satisfaction)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  -9.000   2.000   2.000   2.136   3.000   4.000</code></pre>
+<pre class="r"><code>satisfaction_standard_deviation &lt;- sd(satisfaction)
+satisfaction_standard_deviation</code></pre>
+<pre><code>## [1] 2.256297</code></pre>
+<pre class="r"><code>satisfaction_variance &lt;- (satisfaction_standard_deviation)^2
+satisfaction_variance</code></pre>
+<pre><code>## [1] 5.090875</code></pre>
+<pre class="r"><code>satisfaction_IQR &lt;- IQR(satisfaction)
+satisfaction_IQR</code></pre>
+<pre><code>## [1] 1</code></pre>
+<p>As above, it shows the data summary of interviewer’s satisfaction for the government performance. We see that the range of the satisfaction mark is from -9 to 4.
+Center: The mean of satisfaction for this dataset is 2.136, and the median of satisfaction for this dataset is 2.000.
+Spread: The standard deviation of satisfaction for this dataset is .256297, the variance of satisfaction for this dataset is 5.090875, and the interquartile range of education level for this dataset is 1.</p>
+<pre class="r"><code>satisfaction &lt;- as.data.frame(satisfaction)
+ggplot(data = satisfaction, aes(x = &#39;&#39;, y = satisfaction)) +
+  geom_boxplot(col=&quot;black&quot;, fill=&quot;pink&quot;) + theme_classic() + 
+  labs(title=&quot;Boxplot of interviewer&#39;s government satisfaction&quot;)</code></pre>
+<p><img src="/post/2015-07-23-r-rmarkdown_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>From the box plot, we see that interviewer’s satisfaction for the government is not normal distribution at all. Moreover, it does not show symmetric with a strongly right-skewed. That means most people’s satisfaction to goverment is more than 0. There is two outliers in data, that means a group of people choose -9 and -8 in this survey. The median of satisfaction is 2, most of people rate the government from 1 to 4.</p>
+</div>
+<div id="part4.-graph" class="section level1">
+<h1>Part4. Graph</h1>
+<div id="graph-for-observing-the-relation-of-educational-level-and-satisfaction-to-government." class="section level3">
+<h3>Graph for observing the relation of educational level and satisfaction to government.</h3>
+<p>For the next step, we are interested in is there any relation between educational level and government satisfaction. So my explanatory variable is educational level and government satisfaction. Since in our daily life, highly educated people may have more opinions and comments to the government. Also, for people who with less education, they may ask the government for more beneficial policies to them and a better living environment. Those factors might be affect their satisfaction to government. If there is a relation between them, we can predict people’s satisfaction to government by their education</p>
+<pre class="r"><code>combine_data &lt;- cbind(edu_level, satisfaction)
+
+scatter_plot &lt;- plot(combine_data$satisfaction ~ combine_data$edu_level, xlab=&quot;Education Level&quot;, ylab = &quot;Satisfaction to Government&quot;, main = &quot;Scatter Plot - Education Level and Satisfaction to Government&quot;)</code></pre>
+<p><img src="/post/2015-07-23-r-rmarkdown_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+</div>
+</div>
+<div id="part4.-graph-discussion" class="section level1">
+<h1>Part4. Graph discussion</h1>
+<p>Firstly, from the scatter plot above we can observe that the distribution of the dataset is strongly diffuse. Secondly, we observe that education level and government satisfaction may not have a linear relation between each other. Thirdly, we find that a few people are both in -6 to 0 education level interval and -6 to 0 satisfaction interval, so the plot shows a part of empty.</p>
+<p>###Analysis of the relation between educational level and satisfaction to government.</p>
+<p>Since we want to find if there is a relation between interviewers’ education level and their satisfaction to government.We fit an linear regression model and describe it.</p>
+<pre class="r"><code>slr_model &lt;- lm(formula = combine_data$satisfaction ~ combine_data$edu_level)
+summary(slr_model)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = combine_data$satisfaction ~ combine_data$edu_level)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -11.3909  -0.2428   0.0535   1.0164   3.0905 
+## 
+## Coefficients:
+##                        Estimate Std. Error t value             Pr(&gt;|t|)    
+## (Intercept)             1.57613    0.12906  12.212 &lt; 0.0000000000000002 ***
+## combine_data$edu_level  0.07407    0.01641   4.514           0.00000654 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 2.251 on 4019 degrees of freedom
+## Multiple R-squared:  0.005045,   Adjusted R-squared:  0.004797 
+## F-statistic: 20.38 on 1 and 4019 DF,  p-value: 0.000006536</code></pre>
+<p>The expected linear regression model between education level and satisfaction is <span class="math inline">\(\hat{y_i} = 1.57613 + 0.07407{x_i}\)</span>, where <span class="math inline">\(\hat{y_i}\)</span> is the estimated satisfaction, and <span class="math inline">\({x_i}\)</span> is education level.</p>
+<p>Then we can make a Null Hypothesis test as saying that <span class="math inline">\({H_0} :{\beta_1} = 0\)</span> and <span class="math inline">\({H_a} :{\beta_1} ≠ 0\)</span>. That can be explained that if <span class="math inline">\({\beta_1} = 0\)</span>, then there is no linear relation between these two variables. Then we find that the p-value is 0.00000654 which is less than the benchmark significance level 0.05. In this case: reject <span class="math inline">\({H_0}\)</span> and fail to reject <span class="math inline">\({H_a}\)</span> at significance level. That means <span class="math inline">\({\beta_1}\)</span> is statistically different from 0. There is a positive linear relation between education level and satisfaction.</p>
+</div>
+<div id="part5.-discussion" class="section level1">
+<h1>Part5. Discussion</h1>
+<p>In the study, we found that there is a positive linear relation between Canadian education level and government satisfaction.</p>
+<p>First of all, we selected a data subset from 2019 Canadian Election Study - Phone Survey data, then we give an overview to the subdata. Then, we picked two variables (Canadian education level and government satisfaction) which we were interested in.</p>
+<p>Secondly, in order to be familiar with this two variable, we summarized these two data, and showed the center and spread of them by r code. When we made the graph, we noticed that these two data variables haven labelled. So we make these two data became two data frames so that we can use ggplot to make plots. We found a large proportion of people are in high education level and a large proportion of rate the government a high score. This observation was shown on histogram of interview’s education level and box plot of interviewer’s government satisfaction.</p>
+<p>In addition, since we wanted to draw a scatter plot for two variables, and see the distribution. We combine two data variables together and make them to a new dataset call ‘combine_data’. After drawing a scatter, we find that there might not be a relation between two.</p>
+<p>To test my guess, we finally make a linear regression model and hypothesis test. We set our assumption as no relation. Then we find the model did not meet our assumption. Then we have our conclusion, government satisfaction differs by education level in this dataset.</p>
+</div>
+<div id="part6.-weaknesses-and-next-steps" class="section level1">
+<h1>Part6. Weaknesses and next steps</h1>
+<p>Firstly, in our linear regression model, we did not consider the residual. Since the population model is different from expected model, if the residual is not normal, the result will be affected. Next step, we can make a residual plot to analyze the residual is normal or not.</p>
+<p>Secondly, we might lack of considering the lucking variables, which may affect the interpretation of relationships between the variables we picked, like interviewers’ age, gender, income, living environment, marital status and so on. In future study, we can add more associative variables and make a multiple linear regression model.</p>
+<p>Thirdly, the quality of the data for these two variables (Canadian education level and government satisfaction) are poor. The range of the data are too limited, we cannot fully observe these two variables. And limited data will lead to a biased results and the results would be not accurate. In future study, we can try to set a larger range of data, like from 1-100, and apply to the next survey. In addition, we can change education level to some more specific data, like GPA.</p>
+<p>Moreover, the distribution of people’s education level and satisfaction of government is not a normal distribution, in which the data might affect our results.Next step, try qqplot to double check the normality and gather more future data(like 2020 data) to make it normal.</p>
+</div>
+<div id="part-7-references" class="section level1">
+<h1>Part 7 References</h1>
+<p>Stephenson, Laura B; Harell, Allison; Rubenson, Daniel; Loewen, Peter John, 2020, “2019 Canadian Election Study - Phone Survey”, <a href="https://doi.org/10.7910/DVN/8RHLG1" class="uri">https://doi.org/10.7910/DVN/8RHLG1</a>, Harvard Dataverse, V1</p>
+<p>Paul A. Hodgetts and Rohan Alexander (2020). cesR: Access the CES Datasets a Little Easier.. R package version 0.1.0.</p>
+<p>Statistics Canada. “Education Indicators in Canada: An International Perspective 2018” (PDF). December 11, 2018. p. 32. Retrieved August 27, 2019.</p>
+<p>Conferenceboard (2020). Education Provincial Rankings - How Canada Performs. <a href="https://www.conferenceboard.ca/hcp/provincial/education.aspx" class="uri">https://www.conferenceboard.ca/hcp/provincial/education.aspx</a></p>
+<p>Mario Canseco / Glacier Media (2020). Two-thirds of Canadians satisfied with federal government’s handling of COVID-19: poll. <a href="https://www.burnabynow.com/two-thirds-of-canadians-satisfied-with-federal-government-s-handling-of-covid-19-poll-1.24103683" class="uri">https://www.burnabynow.com/two-thirds-of-canadians-satisfied-with-federal-government-s-handling-of-covid-19-poll-1.24103683</a></p>
+<div id="refs" class="references">
+<div id="ref-citetiskimr">
+<p>Waring, Elin, Michael Quinn, Amelia McNamara, Eduardo Arino de la Rubia, Hao Zhu, and Shannon Ellis. 2020. <em>Skimr: Compact and Flexible Summaries of Data</em>.</p>
+</div>
+<div id="ref-citetidyverse">
+<p>Wickham, Hadley, Mara Averick, Jennifer Bryan, Winston Chang, Lucy D’Agostino McGowan, Romain François, Garrett Grolemund, et al. 2019. “Welcome to the tidyverse.” <em>Journal of Open Source Software</em> 4 (43): 1686. <a href="https://doi.org/10.21105/joss.01686">https://doi.org/10.21105/joss.01686</a>.</p>
+</div>
+<div id="ref-citetidplyr">
+<p>Wickham, Hadley, Romain François, Lionel Henry, and Kirill Müller. 2020. <em>Dplyr: A Grammar of Data Manipulation</em>.</p>
+</div>
+<div id="ref-citetidevtools">
+<p>Wickham, Hadley, Jim Hester, and Winston Chang. 2020. <em>Devtools: Tools to Make Developing R Packages Easier</em>.</p>
+</div>
+</div>
+</div>
