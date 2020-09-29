@@ -1,12 +1,78 @@
----
-title: "Investigation of 2019 CES Phone Survey Data - Linear relation study between education level and government satisfaction"
-author: "YUERAN HU"
-date: 2020-09-28T21:13:14-05:00
-bibliography: "references.bib"
-categories: ["R"]
-tags: ["R Markdown", "plot", "regression"]
----
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.75.1" />
 
+
+<title>Investigation of 2019 CES Phone Survey Data - Linear Relation study between education level and government satisfaction - Yueran HUHU</title>
+<meta property="og:title" content="Investigation of 2019 CES Phone Survey Data - Linear Relation study between education level and government satisfaction - Yueran HUHU">
+
+
+  <link href='../../../../favicon.ico' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
+<link rel="stylesheet" href="../../../../css/fonts.css" media="all">
+<link rel="stylesheet" href="../../../../css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="../../../../" class="nav-logo">
+    <img src="../../../../images/logo.png"
+         width="50"
+         height="50"
+         alt="Logo">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="../../../../about/">About</a></li>
+    
+    <li><a href="https://github.com/rstudio/blogdown">GitHub</a></li>
+    
+    <li><a href="https://twitter.com/rstudio">Twitter</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">12 min read</span>
+    
+
+    <h1 class="article-title">Investigation of 2019 CES Phone Survey Data - Linear Relation study between education level and government satisfaction</h1>
+
+    
+    <span class="article-date">2020-09-27</span>
+    
+
+    <div class="article-content">
+      
 
 
 <p>Code and data supporting this analysis is available at: “GitHub URL”.</p>
@@ -203,7 +269,7 @@ Spread: The standard deviation of education level for this dataset is 2.163563, 
 ggplot(data = edu_level, aes(x = edu_level)) +
   geom_histogram(col=&quot;black&quot;, fill=&quot;pink&quot;, bins = 20) + theme_classic() + 
   labs(title=&quot;Histogram of interviewer&#39;s education level&quot;)</code></pre>
-<p><img src="/post/2015-07-23-r-rmarkdown_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p><img src="../../../../post/2015-07-23-r-rmarkdown_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 <p>In this histogram of interviewer’s education level, the distribution of the data is not symmetric. We see that the prominent peak lies to the right with the tail extending to the left, that means it is a left-skewed dataset. This variable interviewer’s education level is not approximately normal. There are more than 1500 people that intend to rate more than 9 points to the government. Also it shows a few people with education level from -9 to -1.</p>
 <pre class="r"><code>satisfaction &lt;- phone2019_newsubset$government_satisfaction
 
@@ -226,7 +292,7 @@ Spread: The standard deviation of satisfaction for this dataset is .256297, the 
 ggplot(data = satisfaction, aes(x = &#39;&#39;, y = satisfaction)) +
   geom_boxplot(col=&quot;black&quot;, fill=&quot;pink&quot;) + theme_classic() + 
   labs(title=&quot;Boxplot of interviewer&#39;s government satisfaction&quot;)</code></pre>
-<p><img src="/post/2015-07-23-r-rmarkdown_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="../../../../post/2015-07-23-r-rmarkdown_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <p>From the box plot, we see that interviewer’s satisfaction for the government is not normal distribution at all. Moreover, it does not show symmetric with a strongly right-skewed. That means most people’s satisfaction to goverment is more than 0. There is two outliers in data, that means a group of people choose -9 and -8 in this survey. The median of satisfaction is 2, most of people rate the government from 1 to 4.</p>
 </div>
 <div id="part4.-graph" class="section level1">
@@ -237,7 +303,7 @@ ggplot(data = satisfaction, aes(x = &#39;&#39;, y = satisfaction)) +
 <pre class="r"><code>combine_data &lt;- cbind(edu_level, satisfaction)
 
 scatter_plot &lt;- plot(combine_data$satisfaction ~ combine_data$edu_level, xlab=&quot;Education Level&quot;, ylab = &quot;Satisfaction to Government&quot;, main = &quot;Scatter Plot - Education Level and Satisfaction to Government&quot;)</code></pre>
-<p><img src="/post/2015-07-23-r-rmarkdown_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="../../../../post/2015-07-23-r-rmarkdown_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 </div>
 </div>
 <div id="part4.-graph-discussion" class="section level1">
@@ -305,3 +371,47 @@ summary(slr_model)</code></pre>
 </div>
 </div>
 </div>
+
+    </div>
+  </article>
+
+  
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="../../../../index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="../../../../images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+<script src="../../../../js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+    
+  </body>
+</html>
+

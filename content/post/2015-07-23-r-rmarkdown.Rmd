@@ -1,7 +1,7 @@
 ---
-title: "Investigation of 2019 CES Phone Survey Data"
+title: "Investigation of 2019 CES Phone Survey Data - Linear relation study between education level and government satisfaction"
 author: "YUERAN HU"
-date: 2020-09-27T21:13:14-05:00
+date: 2020-09-28T21:13:14-05:00
 bibliography: "references.bib"
 categories: ["R"]
 tags: ["R Markdown", "plot", "regression"]
@@ -18,11 +18,6 @@ We use @citetidyverse @citetidplyr @citetiskimr @citetidevtools.
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 options(scipen=999)
-#install.packages("tidyverse")
-#install.packages("dplyr")
-#install.packages("skimr")
-#install.packages("devtools")
-#devtools::install_github("hodgettsp/cesR")
 library(tidyverse)
 library(cesR)
 library(skimr)

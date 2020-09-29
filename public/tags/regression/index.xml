@@ -6,13 +6,13 @@
     <description>Recent content in regression on Yueran HUHU</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 27 Sep 2020 21:13:14 -0500</lastBuildDate><atom:link href="/tags/regression/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 28 Sep 2020 21:13:14 -0500</lastBuildDate><atom:link href="/tags/regression/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Investigation of 2019 CES Phone Survey Data</title>
-      <link>/2020/09/27/investigation-of-2019-ces-phone-survey-data/</link>
-      <pubDate>Sun, 27 Sep 2020 21:13:14 -0500</pubDate>
+      <title>Investigation of 2019 CES Phone Survey Data - Linear relation study between education level and government satisfaction</title>
+      <link>/2020/09/28/investigation-of-2019-ces-phone-survey-data-linear-relation-study-between-education-level-and-government-satisfaction/</link>
+      <pubDate>Mon, 28 Sep 2020 21:13:14 -0500</pubDate>
       
-      <guid>/2020/09/27/investigation-of-2019-ces-phone-survey-data/</guid>
+      <guid>/2020/09/28/investigation-of-2019-ces-phone-survey-data-linear-relation-study-between-education-level-and-government-satisfaction/</guid>
       <description>Code and data supporting this analysis is available at: “GitHub URL”.
 Part1. Abstract: We observe and analyze the 2019 CES Phone Survey data. By following graphs and model, we found that people with higher education level have higher satisfaction to Canadian government. This result is important, since we can predict people’s satisfaction to government by their education level, and Canadian education level has always been a concern for citizens and new immigrants.</description>
     </item>
