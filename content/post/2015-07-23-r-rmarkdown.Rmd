@@ -20,8 +20,6 @@ knitr::opts_chunk$set(echo = TRUE)
 options(scipen=999)
 library(tidyverse)
 library(cesR)
-library(skimr)
-library(knitr)
 ```
 # Part2. Introduction
 
